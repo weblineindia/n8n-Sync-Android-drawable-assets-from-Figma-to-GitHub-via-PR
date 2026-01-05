@@ -1,106 +1,110 @@
-# Sync Android drawable assets from Figma to GitHub via PR (multi-density PNG)
+# Sync Android Drawable Assets from Figma to GitHub via PR (Multi-Density PNG)
 
-This n8n workflow automatically fetches design assets (icons, buttons) from a Figma file, exports them into Android drawable asset folders for different screen densities (such as `mdpi`, `hdpi`, etc.), and commits them to a GitHub branch — creating a Pull Request with all updates. :contentReference[oaicite:1]{index=1}
+This n8n workflow automatically fetches design assets (icons, buttons, etc.) from a Figma file, exports them into Android drawable folders for multiple screen densities (`mdpi`, `hdpi`, `xhdpi`, etc.), and commits them to a GitHub branch — creating a Pull Request with all updates.
+
+It removes manual exporting, resizing, and uploading of assets, ensuring design and code stay perfectly in sync.
 
 ---
 
 ## Who’s It For
 
-- Android and Flutter developers managing multi-density drawable assets
-- Design and development teams wanting to automate asset delivery
-- Mobile teams tired of manually exporting, resizing, and uploading design assets
-- Projects where design changes frequently and assets must stay in sync with code :contentReference[oaicite:2]{index=2}
+* Android and Flutter developers managing multi-density drawable assets
+* Design and development teams automating asset delivery
+* Mobile teams tired of manual export and upload workflows
+* Projects where design assets change frequently and must stay in sync with code
 
 ---
 
 ## How It Works
 
-1. Trigger the workflow manually or via schedule/webhook.
-2. Fetch all export URLs from a Figma file.
-3. Filter components to extract only relevant items like `Icon` and `Button`.
-4. Prepare Android drawable folders (e.g., `drawable-mdpi`, `drawable-hdpi`).
-5. Map and merge fetched components with folder structure.
-6. Call Figma API to get the images for all required densities.
-7. Filter out invalid URLs.
-8. Download all images as binary files.
-9. Rename and adjust file names if needed.
-10. Ensure no duplicate Pull Requests are created.
-11. Commit the files to a new branch and create a GitHub Pull Request. :contentReference[oaicite:3]{index=3}
+1. Trigger the workflow manually, on a schedule, or via webhook
+2. Fetch export URLs from a Figma file
+3. Filter components to include only relevant nodes (e.g., `Icon`, `Button`)
+4. Prepare Android drawable folders (`drawable-mdpi`, `drawable-hdpi`, etc.)
+5. Map components to the correct density folders
+6. Call the Figma API to export images for all required densities
+7. Filter out invalid or empty export URLs
+8. Download images as binary files
+9. Normalize and rename files if required
+10. Check for existing open Pull Requests to avoid duplicates
+11. Commit files to a new GitHub branch and create a Pull Request
 
 ---
 
 ## How to Set Up
 
-1. Create and connect your **Figma API token** in n8n (ensure it has access to the design file).
-2. Copy the **Figma File Key** and optionally the parent **node ID** where your assets reside.
-3. Connect your **GitHub account** in n8n (OAuth Token).
-4. Prepare a **GitHub branch** to upload the assets.
-5. Configure your **drawable folders** and file naming logic in the workflow.
-6. Run the workflow to fetch and prepare assets.
-7. Confirm the Pull Request is generated with drawable assets. :contentReference[oaicite:4]{index=4}
+1. Create and connect a **Figma API token** in n8n (with access to the design file)
+2. Copy the **Figma File Key** and, optionally, the parent **Node ID** containing assets
+3. Connect your **GitHub account** in n8n using an OAuth token
+4. Configure the target **GitHub repository and base branch**
+5. Define:
+
+   * Drawable folder structure (`drawable-mdpi`, `drawable-hdpi`, etc.)
+   * File naming conventions
+6. Run the workflow to fetch and prepare assets
+7. Verify the generated Pull Request contains all updated drawable assets
 
 ---
 
 ## Requirements
 
-| Tool                   | Purpose                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| Figma API Token        | To fetch assets and export URLs                                                                   |
-| GitHub Token           | To commit files and create Pull Requests                                                          |
-| n8n                    | Workflow automation engine                                                                        |
-| Figma File Key         | Design file to export from                                                                        |
-| Node Names in Workflow | Nodes like `Icon`, `Button` matching your export categories :contentReference[oaicite:5]{index=5} |
+| Tool / Input     | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| Figma API Token  | Fetch assets and export URLs from Figma              |
+| Figma File Key   | Design file containing drawable assets               |
+| GitHub Token     | Commit files and create Pull Requests                |
+| n8n              | Workflow automation engine                           |
+| Component Naming | Figma node names like `Icon`, `Button` for filtering |
 
 ---
 
 ## How to Customize
 
-- Add more component types to extract (e.g., `Avatar`, `Chip`).
-- Change folder structure for different platforms (iOS, Web).
-- Include image optimization before upload (e.g., compress PNGs).
-- Switch from PR creation to direct commits if preferred.
-- Add CI triggers after PR creation (Slack notifications, Jenkins, GitHub Actions). :contentReference[oaicite:6]{index=6}
+* Add more component types (e.g., `Avatar`, `Chip`, `Illustration`)
+* Adjust folder structure for other platforms (iOS, Web, Flutter)
+* Add image optimization (PNG compression) before committing
+* Switch from PR creation to direct commits if required
+* Trigger CI workflows after PR creation (GitHub Actions, Jenkins)
 
 ---
 
 ## Add-Ons
 
-- **Slack Notification Node** — Notify teams when a PR is created.
-- **Commit Summary Update** — Append a summary of updated assets to `CHANGELOG.md`.
-- **Image Format Conversion** — Convert assets between formats (SVG → PNG, PNG → WebP).
-- **Auto-Tagging** — Tag the GitHub release based on asset count or changes. :contentReference[oaicite:7]{index=7}
+* **Slack notifications** when a Pull Request is created
+* **Changelog updates** to append asset changes automatically
+* **Image format conversion** (SVG → PNG, PNG → WebP)
+* **Auto-tagging releases** based on asset updates
 
 ---
 
 ## Use Case Examples
 
-- Automatically export new design icons from Figma as Android assets.
-- Designers update icons — developers receive a PR with ready-to-merge assets.
-- Maintain consistency across densities without manual effort.
-- Integrate this workflow into weekly design-dev sync routines. :contentReference[oaicite:8]{index=8}
+* Automatically export updated icons from Figma as Android assets
+* Designers update assets → developers receive a ready-to-merge PR
+* Maintain consistency across screen densities with zero manual work
+* Run this workflow as part of weekly design–development syncs
 
 ---
 
 ## Common Troubleshooting
 
-| Issue                      | Possible Cause                                     | Solution                                                                                                         |
-| -------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Export URL is `null`       | Figma node has no export settings                  | Add export settings to each component in Figma                                                                   |
-| Images not appearing in PR | Incorrect merge or file naming                     | Reconfirm merge logic and ensure file extensions are correct                                                     |
-| Duplicate PR created       | Workflow does not properly check existing branches | Update condition node to check for existing open PRs                                                             |
-| Figma API errors (403/401) | Invalid or expired Figma token                     | Regenerate token and update n8n credentials                                                                      |
-| GitHub upload fails        | Path incorrect or binary mismatch                  | Ensure correct folder structure (`drawable-mdpi`, etc.) and valid binaries :contentReference[oaicite:9]{index=9} |
+| Issue                      | Possible Cause                         | Solution                                                  |
+| -------------------------- | -------------------------------------- | --------------------------------------------------------- |
+| Export URL is `null`       | No export settings defined in Figma    | Add export settings to each component in the Figma file   |
+| Images missing in PR       | Incorrect merge or file naming logic   | Verify merge logic and ensure correct file extensions     |
+| Duplicate PRs created      | Existing PR check missing or incorrect | Add a check for open PRs on the same branch               |
+| Figma API errors (401/403) | Invalid or expired Figma token         | Regenerate the token and update credentials in n8n        |
+| GitHub upload fails        | Incorrect path or binary handling      | Verify drawable folder paths and ensure valid binary data |
 
 ---
 
 ## Need Help?
 
-If you’d like help setting up, customizing, or expanding this workflow, reach out to our **WeblineIndia** n8n automation team!  
-We can help with:
+If you’d like help setting up, customizing, or extending this workflow, our **WeblineIndia n8n automation experts** can assist with:
 
-- Fine-tuning Figma export filters
-- Improving file naming and folder mapping
-- Integrating Slack or CI pipelines
-- Adding support for other platforms (iOS, Web) :contentReference[oaicite:10]{index=10}
+* Fine-tuning Figma export filters
+* Improving file naming and folder mapping
+* Integrating Slack or CI pipelines
+* Adding support for iOS, Web, or Flutter assets
 
-Happy automating! 🚀
+Happy automating 🚀
